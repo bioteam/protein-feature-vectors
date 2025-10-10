@@ -80,6 +80,7 @@ class Calculator:
             "Geary": "self._Geary()",
             "GTPC_type_1": "self._GTPC(normalized=True)",
             "GTPC_type_2": "self._GTPC(normalized=False)",
+            "K1TPC": "self._K1TPC()",
             "KSCTriad": "self._KSCTriad()",
             "Moran": "self._Moran()",
             "NMBroto": "self._NMBroto()",
@@ -243,6 +244,7 @@ class Calculator:
         Geary                                              Geary
         GTPC_type_1                                        Grouped tripeptide composition type 1 - normalized
         GTPC_type_2                                        Grouped tripeptide composition type 1 - raw count
+        K1TPC                                              1-spaced tripeptide composition - normalized frequencies of 1-spaced tripeptides
         KSCTriad                                           Conjoint k-spaced triad
         Moran                                              Correlation between neighboring residues based on physicochemical properties
         NMBroto                                            Correlation between neighboring residues based on physicochemical properties
@@ -512,6 +514,62 @@ class Calculator:
                             round((i * (1000 / len(sequence))), 1)
                             for i in tmpCode
                         ]
+                code = code + tmpCode
+                encodings.append(code)
+            except Exception as e:
+                print(f"Error: {e} {name}")
+        encodings = np.array(encodings)
+        self.encodings = pd.DataFrame(
+            encodings[1:, 1:].astype(float),
+            columns=encodings[0, 1:],
+            index=encodings[1:, 0],
+        )
+        return True
+
+    def _K1TPC(self):
+        encodings = []
+        k1tripeptides = [
+            f"K1TPC_" + aa1 + aa2 + aa3
+            for aa1 in self.AA
+            for aa2 in self.AA
+            for aa3 in self.AA
+        ]
+        header = ["SampleName"] + k1tripeptides
+        encodings.append(header)
+        gap = self.__default_para["kspace"] + 1
+        AADict = {}
+        for i in range(len(self.AA)):
+            AADict[self.AA[i]] = i
+        for i in self.seq_list:
+            try:
+                name, sequence = i[0], i[1]
+                if (
+                    len(sequence) < 5
+                ):  # Need at least 5 AAs for positions 0,2,4
+                    print(f"Skipping {name} K1TPC sequence is less than 5")
+                    continue
+                code = [name]
+                tmpCode = [0] * 8000
+                # Extract 1-spaced tripeptides: positions j, j+2, j+4
+                for j in range(
+                    len(sequence) - 4
+                ):  # -4 because we need j+4 to be valid
+                    aa1, aa2, aa3 = (
+                        sequence[j],
+                        sequence[j + gap],
+                        sequence[j + gap + gap],
+                    )
+                    if aa1 in self.AA and aa2 in self.AA and aa3 in self.AA:
+                        tmpCode[
+                            AADict[aa1] * 400 + AADict[aa2] * 20 + AADict[aa3]
+                        ] += 1
+                if sum(tmpCode) != 0:
+                    """
+                    Normalize to count of trimer per 1000 aa
+                    """
+                    tmpCode = [
+                        round((x * (1000 / len(sequence))), 1) for x in tmpCode
+                    ]
                 code = code + tmpCode
                 encodings.append(code)
             except Exception as e:

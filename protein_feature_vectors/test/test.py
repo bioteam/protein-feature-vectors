@@ -81,6 +81,7 @@ for alg in [
     "TPC_type_1",
     "TPC_type_2",
     "TPC_type_3",
+    "K1TPC",
 ]:
     proteins.get_feature_vectors(alg, pdict=seqs)
     print("\n", proteins.encodings, "\n")
