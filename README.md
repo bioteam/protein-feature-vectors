@@ -11,7 +11,7 @@ This package is derived from [iFeatureOmega-CLI](https://github.com/Superzchen/i
 - It has fewer dependencies than iFeatureOmega-CLI: just numpy, pandas, and [fastapy](https://github.com/aziele/fastapy)
 - It just creates feature vectors and has no other plotting or analytical capabilities
 - It has additional variants of specific algorithms (e.g. TPC_type_3, CKSAAP_type_3) created for faster Deep Learning
-- It has an additional algorithm called K1TPC which calculates the frequency of 1-spaced tripeptides (e.g. M_L_P from the sequence MSLCP)
+- It has additional algorithms, e.g. K1TPC which calculates the frequency of 1-spaced tripeptides (e.g. M_L_P from the sequence MSLCP)
 
 ## Installation
 
@@ -42,7 +42,7 @@ seqs = {"A1": "MLVTIKIQLKEAL...LDTGADVLEDM", "B2": "MHLPGKWMIGGIG....GFIKVRQYDEI
 calc.get_feature_vectors("Moran", pdict=seqs)
 ```
 
-Get ids and values from the *encodings* DataFrame as Series objects
+Get ids and values from the *encodings* DataFrame as Series objects:
 
 ```python
 calc.get_feature_vectors("CTDC", pdict=seqs)
@@ -50,7 +50,7 @@ protein_ids = [x[0] for x in calc.encodings.iterrows()]
 values = [x[1].tolist() for x in calc.encodings.iterrows()]
 ```
 
-Save data to a file
+Save data to a file:
 
 ```python
 calc.get_feature_vectors("AAC", pdict=seqs)
