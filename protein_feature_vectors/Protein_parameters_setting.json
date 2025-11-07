@@ -22,6 +22,9 @@
 	"K1TPC": {
 		"kspace": 1
 	},
+	"K2TPC": {
+		"kspace": 2
+	},
 	"QSOrder": {
 		"nlag": 3,
 		"weight": 0.05

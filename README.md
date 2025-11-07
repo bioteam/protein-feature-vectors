@@ -87,6 +87,7 @@ calc.to_csv("AAC.csv", index=True, header=True)
 | GTPC_type_1 | Grouped tripeptide composition - normalized | 125 |
 | GTPC_type_2 | Grouped tripeptide composition - raw count | 125 |
 | K1TPC | 1-spaced tripeptide composition - normalized frequencies of 1-spaced tripeptides | 8000 |
+| K2TPC | 2-spaced tripeptide composition - normalized frequencies of 2-spaced tripeptides | 8000 |
 | KSCTriad | k-spaced CTriad, k = 0,1,2,3 | 1372 |
 | Moran | Spatial autocorrelation of physicochemical properties | 240 |
 | NMBroto | Normalized Moreau-Broto | 240 |

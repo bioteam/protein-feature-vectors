@@ -81,6 +81,7 @@ class Calculator:
             "GTPC_type_1": "self._GTPC(normalized=True)",
             "GTPC_type_2": "self._GTPC(normalized=False)",
             "K1TPC": "self._K1TPC()",
+            "K2TPC": "self._K2TPC()",
             "KSCTriad": "self._KSCTriad()",
             "Moran": "self._Moran()",
             "NMBroto": "self._NMBroto()",
@@ -245,6 +246,7 @@ class Calculator:
         GTPC_type_1                                        Grouped tripeptide composition type 1 - normalized
         GTPC_type_2                                        Grouped tripeptide composition type 1 - raw count
         K1TPC                                              1-spaced tripeptide composition - normalized frequencies of 1-spaced tripeptides
+        K2TPC                                              2-spaced tripeptide composition - normalized frequencies of 1-spaced tripeptides
         KSCTriad                                           Conjoint k-spaced triad
         Moran                                              Correlation between neighboring residues based on physicochemical properties
         NMBroto                                            Correlation between neighboring residues based on physicochemical properties
@@ -529,7 +531,7 @@ class Calculator:
     def _K1TPC(self):
         encodings = []
         k1tripeptides = [
-            f"K1TPC_" + aa1 + aa2 + aa3
+            "K1TPC_" + aa1 + aa2 + aa3
             for aa1 in self.AA
             for aa2 in self.AA
             for aa3 in self.AA
@@ -558,6 +560,66 @@ class Calculator:
                         sequence[j],
                         sequence[j + gap],
                         sequence[j + gap + gap],
+                    )
+                    if aa1 in self.AA and aa2 in self.AA and aa3 in self.AA:
+                        tmpCode[
+                            AADict[aa1] * 400 + AADict[aa2] * 20 + AADict[aa3]
+                        ] += 1
+                if sum(tmpCode) != 0:
+                    """
+                    Normalize to count of trimer per 1000 aa
+                    """
+                    tmpCode = [
+                        round((x * (1000 / len(sequence))), 1) for x in tmpCode
+                    ]
+                code = code + tmpCode
+                encodings.append(code)
+            except Exception as e:
+                print(f"Error: {e} {name}")
+        encodings = np.array(encodings)
+        self.encodings = pd.DataFrame(
+            encodings[1:, 1:].astype(float),
+            columns=encodings[0, 1:],
+            index=encodings[1:, 0],
+        )
+        return True
+
+    def _K2TPC(self):
+        encodings = []
+        k2tripeptides = [
+            "K2TPC_" + aa1 + aa2 + aa3
+            for aa1 in self.AA
+            for aa2 in self.AA
+            for aa3 in self.AA
+        ]
+        header = ["SampleName"] + k2tripeptides
+        encodings.append(header)
+        gap = 2  # Fixed gap of 2 for K2TPC
+        AADict = {}
+        for i in range(len(self.AA)):
+            AADict[self.AA[i]] = i
+        for i in self.seq_list:
+            try:
+                name, sequence = i[0], i[1]
+                if (
+                    len(sequence) < 7
+                ):  # Need at least 7 AAs for positions 0,3,6
+                    print(f"Skipping {name} K2TPC sequence is less than 7")
+                    continue
+                code = [name]
+                tmpCode = [0] * 8000
+                # Extract 2-spaced tripeptides: positions j, j+3, j+6
+                for j in range(
+                    len(sequence) - 6
+                ):  # -6 because we need j+6 to be valid
+                    aa1, aa2, aa3 = (
+                        sequence[j],
+                        sequence[
+                            j + gap + 1
+                        ],  # gap=2 means 3 positions apart (j+3)
+                        sequence[
+                            j + 2 * gap + 2
+                        ],  # 2*gap+2 means 6 positions apart (j+6)
                     )
                     if aa1 in self.AA and aa2 in self.AA and aa3 in self.AA:
                         tmpCode[
