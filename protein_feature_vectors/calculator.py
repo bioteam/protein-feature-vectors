@@ -647,7 +647,7 @@ class Calculator:
     def _GAAC(self):
         try:
             group = {
-                "alphatic": "GAVLMI",
+                "aliphatic": "GAVLMI",
                 "aromatic": "FYW",
                 "postivecharge": "KRH",
                 "negativecharge": "DE",
@@ -691,7 +691,7 @@ class Calculator:
         try:
             gap = self.__default_para["kspace"]
             group = {
-                "alphaticr": "GAVLMI",
+                "aliphaticr": "GAVLMI",
                 "aromatic": "FYW",
                 "postivecharger": "KRH",
                 "negativecharger": "DE",
@@ -759,7 +759,7 @@ class Calculator:
     def _GDPC(self, normalized=True):
         try:
             group = {
-                "alphaticr": "GAVLMI",
+                "aliphaticr": "GAVLMI",
                 "aromatic": "FYW",
                 "postivecharger": "KRH",
                 "negativecharger": "DE",
@@ -814,7 +814,7 @@ class Calculator:
     def _GTPC(self, normalized=True):
         try:
             group = {
-                "alphaticr": "GAVLMI",
+                "aliphaticr": "GAVLMI",
                 "aromatic": "FYW",
                 "postivecharger": "KRH",
                 "negativecharger": "DE",
